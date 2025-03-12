@@ -12,7 +12,7 @@ import json
 app = Flask(__name__)
 
 # Google Drive file ID of the model
-GDRIVE_MODEL_URL = "https://drive.google.com/file/d/12JG_GpwlSdxyCI6ogX3_hTgDwmxRVJLR/view?usp=sharing"
+GDRIVE_MODEL_URL = "https://drive.google.com/uc?export=download&id=12JG_GpwlSdxyCI6ogX3_hTgDwmxRVJLR"
 MODEL_PATH = "plant_disease_model_with_aug.h5"
 
 # Download the model if it doesn't exist
