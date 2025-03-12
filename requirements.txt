@@ -1,5 +1,5 @@
-Flask
-numpy
-tensorflow
-Pillow
+Flask==3.1.0
+numpy==2.0.2
+tensorflow==2.18.0  # Change version based on your TensorFlow setup
+Pillow==11.1.0
 gunicorn
