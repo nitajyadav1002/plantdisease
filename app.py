@@ -1,4 +1,5 @@
 import numpy as np
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 import tensorflow as tf
 from flask import Flask, request, jsonify
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
