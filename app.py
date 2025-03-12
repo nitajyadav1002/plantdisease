@@ -1,19 +1,29 @@
 import numpy as np
-import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 import tensorflow as tf
 from flask import Flask, request, jsonify
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 from PIL import Image
 import io
+import gdown
+import os
+from collections import OrderedDict  # Import OrderedDict
+import json
 
 app = Flask(__name__)
 
-# Load the trained model
+# Google Drive file ID of the model
+GDRIVE_MODEL_URL = "https://drive.google.com/file/d/12JG_GpwlSdxyCI6ogX3_hTgDwmxRVJLR/view?usp=sharing"
 MODEL_PATH = "plant_disease_model_with_aug.h5"
+
+# Download the model if it doesn't exist
+if not os.path.exists(MODEL_PATH):
+    print("Downloading model from Google Drive...")
+    gdown.download(GDRIVE_MODEL_URL, MODEL_PATH, quiet=False)
+
+# Load the trained model
 model = tf.keras.models.load_model(MODEL_PATH)
 
-# Define class names (same as Streamlit)
+# Define class names
 class_names = [
     'Apple___Apple_scab', 'Apple___Black_rot', 'Apple___Cedar_apple_rust', 'Apple___healthy',
     'Background_without_leaves', 'Blueberry___healthy', 'Cherry___Powdery_mildew', 'Cherry___healthy',
@@ -58,11 +68,22 @@ def predict():
         prediction = model.predict(processed_image)
         result_index = np.argmax(prediction)
         predicted_class = class_names[result_index]
+        accuracy = prediction[0][result_index] * 100  # Convert to percentage
 
-        return jsonify({"prediction": predicted_class})
-    
+        # Ensure "prediction" comes first
+        response = OrderedDict([
+            ("prediction", predicted_class),
+            ("accuracy", f"{accuracy:.2f}%")
+        ])
+
+        return app.response_class(
+            response=json.dumps(response),  # Convert OrderedDict to JSON string
+            status=200,
+            mimetype="application/json"
+        )
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
+    
 if __name__ == "__main__":
     app.run(debug=True)
